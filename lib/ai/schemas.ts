@@ -34,12 +34,12 @@ export const GapAnalysisResponseSchema = z.array(GapFindingSchema).min(1)
 
 export type GapAnalysisResponseSchemaType = z.infer<typeof GapAnalysisResponseSchema>
 
-// Quick check AI response
+// Quick check AI response — pillar-based insights, warm advisory tone
 export const QuickCheckAIResponseSchema = z.object({
-  risk_grade: z.enum(['high_risk', 'moderate_risk', 'low_risk']),
-  risk_summary: z.string().min(20),
-  top_concerns: z.array(z.string()).max(3),
-  cta_message: z.string(),
+  labour_insight: z.string().min(10),
+  health_safety_insight: z.string().min(10),
+  overall_summary: z.string().min(20),
+  cta_message: z.string().min(10),
 })
 
 export type QuickCheckAIResponseSchemaType = z.infer<typeof QuickCheckAIResponseSchema>

@@ -20,6 +20,8 @@ export type EstimatedEffort = 'low' | 'medium' | 'high'
 
 export type RiskGrade = 'high_risk' | 'moderate_risk' | 'low_risk'
 
+export type ReadinessLevel = 'getting_started' | 'making_progress' | 'looking_good' | 'not_assessed'
+
 // ─── Database row types ───────────────────────────────────────────────────────
 
 export interface Organisation {
@@ -128,7 +130,7 @@ export interface QuickCheckSubmission {
   site_type: SiteType
   country: string
   responses: Record<string, string>
-  risk_grade: RiskGrade
+  risk_grade: RiskGrade | ReadinessLevel
   risk_summary: string
   created_at: string
 }
@@ -160,22 +162,23 @@ export interface ScoreDelta {
 // ─── Quick check types ────────────────────────────────────────────────────────
 
 export type QuickCheckResponses = {
-  QC1: 'yes' | 'no'
-  QC2: 'yes' | 'no'
-  QC3: 'yes' | 'no'
-  QC4: 'yes' | 'no'
-  QC5: 'yes' | 'no'
+  workforce_size: string
+  worker_documentation: string
+  health_safety_management: string
+  fire_safety: string
+  audit_history: string
 }
 
-export type QuickCheckReason =
-  | 'zero_tolerance_detected'
-  | 'multiple_critical_gaps'
-  | 'single_critical_gap'
-  | 'no_immediate_concerns'
+export interface PillarReadiness {
+  pillar: Pillar
+  level: ReadinessLevel
+  score: number // 0–1.5 raw score
+  label: string // human-friendly label
+}
 
 export interface QuickCheckResult {
-  grade: RiskGrade
-  reason: QuickCheckReason
+  pillars: PillarReadiness[]
+  overall_level: ReadinessLevel
 }
 
 // ─── Intake question types ────────────────────────────────────────────────────
@@ -189,10 +192,18 @@ export interface IntakeQuestion {
   placeholder?: string
 }
 
+export interface QuickCheckOption {
+  value: string
+  label: string
+  score: number
+}
+
 export interface QuickCheckQuestion {
   id: keyof QuickCheckResponses
   question: string
-  signal: string
+  subtitle: string
+  options: QuickCheckOption[]
+  pillar: Pillar | 'context' // which pillar this maps to, or 'context' for sizing info
 }
 
 // ─── AI response types ────────────────────────────────────────────────────────
@@ -222,9 +233,9 @@ export interface GapFindingAIOutput {
 }
 
 export interface QuickCheckAIResponse {
-  risk_grade: RiskGrade
-  risk_summary: string
-  top_concerns: string[]
+  labour_insight: string
+  health_safety_insight: string
+  overall_summary: string
   cta_message: string
 }
 

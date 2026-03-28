@@ -111,10 +111,10 @@ describe('ConversationResponseSchema', () => {
 
 describe('QuickCheckAIResponseSchema', () => {
   const validQC = {
-    risk_grade: 'low_risk' as const,
-    risk_summary: 'Your site appears to have no immediate SMETA compliance concerns based on these five questions.',
-    top_concerns: [],
-    cta_message: 'Get your full SMETA readiness analysis.',
+    labour_insight: 'Your worker documentation is a great area to build on.',
+    health_safety_insight: 'Health and safety practices are developing well at your site.',
+    overall_summary: 'Based on what you have shared, there are clear areas where a full assessment can help you strengthen your compliance position.',
+    cta_message: 'A full readiness assessment will give you a clear picture across all SMETA criteria.',
   }
 
   it('valid quick check response passes', () => {
@@ -122,16 +122,14 @@ describe('QuickCheckAIResponseSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('risk_summary too short fails', () => {
-    const result = QuickCheckAIResponseSchema.safeParse({ ...validQC, risk_summary: 'Short.' })
+  it('overall_summary too short fails', () => {
+    const result = QuickCheckAIResponseSchema.safeParse({ ...validQC, overall_summary: 'Short.' })
     expect(result.success).toBe(false)
   })
 
-  it('more than 3 top_concerns fails', () => {
-    const result = QuickCheckAIResponseSchema.safeParse({
-      ...validQC,
-      top_concerns: ['a', 'b', 'c', 'd'],
-    })
+  it('missing labour_insight fails', () => {
+    const { labour_insight: _, ...withoutLabour } = validQC
+    const result = QuickCheckAIResponseSchema.safeParse(withoutLabour)
     expect(result.success).toBe(false)
   })
 })
